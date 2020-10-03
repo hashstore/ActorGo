@@ -1,7 +1,0 @@
-syntax = "proto3";
-package gag;
-
-import "google/protobuf/timestamp.proto";
-
-option go_package = "github.com/hashstore/GoActorGo/gag/protobuf/";
-
