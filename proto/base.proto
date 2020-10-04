@@ -1,0 +1,23 @@
+syntax = "proto3";
+package gag.pb;
+
+option go_package = "github.com/hashstore/GoActorGo/pb/base";
+
+// Content Address KEy - current implementation is SHA256 and `digest` length is
+// 32 bytes.
+message Cake { bytes digest = 1; }
+
+// RAndom KEy (16 bytes sourced from urandom) - long enough to be considered
+// unique within specific domain. Key space is 4 bits bigger that UUID4.
+message Rake { bytes data = 1; }
+
+// One of either Cake or Ake
+message Ake {
+  oneof c_or_r {
+    Cake cake = 1;
+    Rake rake = 2;
+  }
+}
+
+// see https://github.com/jbenet/nanotime
+message Nanotime { fixed64 nanos = 1; }

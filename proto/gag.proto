@@ -1,98 +1,74 @@
 syntax = "proto3";
-package gag;
+package gag.pb;
 
-option go_package = ".;gag";
+option go_package = "github.com/hashstore/GoActorGo/pb/gag";
 
-// Content Address KEy - current implementation is SHA256 and `digest` length is 32 bytes. 
-message Cake {
-    bytes digest = 1 ;
-}
+import "base.proto";
 
-// RAndom KEy (16 bytes sourced from urandom) - long enough to be considered unique within 
-// specific domain. Key space is 4 bits bigger that UUID4.
-message Rake {
-    bytes data = 1 ;
-}
+message IP { bytes octets = 1; }
 
-//Most of the time 
-message Ake {
-    oneof c_or_r {
-        Cake cake = 1;
-        Rake rake = 2;
-    }
-}
-
-// see https://github.com/jbenet/nanotime
-message Nanotime {
-    fixed64 nanos = 1;
-}
-
-message IP {
-    bytes octets = 1;
-}
-
-// TCP port and hostname hostname 
+// TCP port and hostname hostname
 message HostCoordinate {
-    int32 port = 1;
-    string name = 2;
-    repeated IP ips = 3;
+  int32 port = 1;
+  string name = 2;
+  repeated IP ips = 3;
 }
 
 // public information about host
-message Host{
-    Cake  host_id = 1; // Cake of host public key
-    bytes pub_key = 2;
-    repeated string env_tags = 3;
-    repeated HostCoordinate coords = 4;
+message Host {
+  Cake host_id = 1; // Cake of host public key
+  bytes pub_key = 2;
+  repeated string env_tags = 3;
+  repeated HostCoordinate coords = 4;
 }
 
 // public information about actor
 message ActorLocator {
-    Rake actor_id = 1;
-    Rake host_id = 2;
-    Cake config_id = 3;
+  Rake actor_id = 1;
+  Rake host_id = 2;
+  Cake config_id = 3;
 }
 
 // message set between actors
 message Message {
-    Rake actor_to = 1;
-    Rake actor_from = 2;
-    Nanotime sent = 3;
-    bytes body = 4 ;
+  Rake actor_to = 1;
+  Rake actor_from = 2;
+  Nanotime sent = 3;
+  bytes body = 4;
 }
 
+message Tag { string name = 1; }
 
 message TagMatch {
-    string tag = 1;
-    bool not_operation = 2; // presence of `tag` is default, absence of tag if `true`
+  string tag = 1;
+  bool not_operation =
+      2; // presence of `tag` is default, absence of tag if `true`
 }
 
 message TagListMatch {
-    repeated TagMatch tags = 1;
-    repeated TagListMatch tagLists = 2 ;
-    bool or_operation = 3; // `and`  behavior is default, `or` if `true`
+  repeated TagMatch tags = 1;
+  repeated TagListMatch tagLists = 2;
+  bool or_operation = 3; // `and`  behavior is default, `or` if `true`
 }
 
 message ActorConfig {
-    TagListMatch match = 1;
-    bytes config_body = 2; 
+  TagListMatch match = 1;
+  bytes config_body = 2;
 }
 
-message Worker {
-    ActorLocator locator = 1 ;
-}
+message Worker { ActorLocator locator = 1; }
 
 message Domain {
-    Rake domain_id = 1;
-    repeated Host hosts = 2;
-    repeated ActorLocator actors = 3;
-    repeated ActorConfig configs = 4;
+  Rake domain_id = 1;
+  repeated Host hosts = 2;
+  repeated ActorLocator actors = 3;
+  repeated ActorConfig configs = 4;
 }
 
-//private host state
+// private host state
 message HostSuperviser {
-    Host host = 1;
-    bytes private_key = 2;
-    repeated Worker workers = 3 ;
-    repeated Domain addressBook = 4;
+  Host host = 1;
+  bytes private_key = 2;
+  repeated Worker workers = 3;
+  repeated Domain addressBook = 4;
 }
