@@ -65,7 +65,7 @@ func parseTokens(tokens []string, negateIt bool) (*pb.TagMatch, error) {
 					combineOpDefined = true
 				}
 				matches = append(matches, &pb.TagMatch{
-					Tags:   []string{tokens[i]},
+					Tag:    tokens[i],
 					Negate: nextTagNegated,
 				})
 				nextTagNegated = false

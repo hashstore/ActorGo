@@ -20,7 +20,7 @@ message Ake {
 }
 
 message TagMatch {
-  repeated string tags = 1;
+  string tag = 1;
   repeated TagMatch matches = 2;
   bool combine_as_or = 3; // `and` behavior is default, `or` if `true`
   bool negate = 4;        // negate combined match
