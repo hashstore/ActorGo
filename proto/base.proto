@@ -1,7 +1,7 @@
 syntax = "proto3";
 package gag.pb;
 
-option go_package = "github.com/hashstore/GoActorGo/pb/base";
+option go_package = ".;pb";
 
 // Content Address KEy - current implementation is SHA256 and `digest` length is
 // 32 bytes.
@@ -17,6 +17,13 @@ message Ake {
     Cake cake = 1;
     Rake rake = 2;
   }
+}
+
+message TagMatch {
+  repeated string tags = 1;
+  repeated TagMatch matches = 2;
+  bool combine_as_or = 3; // `and` behavior is default, `or` if `true`
+  bool negate = 4;        // negate combined match
 }
 
 // see https://github.com/jbenet/nanotime

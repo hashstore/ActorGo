@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/hashstore/GoActorGo/base"
+)
 
 func main() {
-	fmt.Println("Hello world!!!")
+	p, err := base.ParseTagMatch(`// xya
+	"text & abc" & ( !a | 3 | "c | b" | d ) x`)
+	fmt.Println(p)
+	fmt.Println(err)
 }

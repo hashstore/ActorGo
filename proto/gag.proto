@@ -1,7 +1,7 @@
 syntax = "proto3";
 package gag.pb;
 
-option go_package = "github.com/hashstore/GoActorGo/pb/gag";
+option go_package = ".;pb";
 
 import "base.proto";
 
@@ -37,22 +37,8 @@ message Message {
   bytes body = 4;
 }
 
-message Tag { string name = 1; }
-
-message TagMatch {
-  string tag = 1;
-  bool not_operation =
-      2; // presence of `tag` is default, absence of tag if `true`
-}
-
-message TagListMatch {
-  repeated TagMatch tags = 1;
-  repeated TagListMatch tagLists = 2;
-  bool or_operation = 3; // `and`  behavior is default, `or` if `true`
-}
-
 message ActorConfig {
-  TagListMatch match = 1;
+  TagMatch match = 1;
   bytes config_body = 2;
 }
 
