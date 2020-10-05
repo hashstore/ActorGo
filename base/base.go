@@ -116,6 +116,20 @@ func ParseTagMatch(query string) (*TagMatch, error) {
 	return parseTokens(tokens, false)
 }
 
-func (*TagMatch) testTags(tags ...string) bool {
+//MatchTags validates if `TagMatch` rule matches tags
+func (tm *TagMatch) MatchTagMap(tagMap *map[string]interface{}) bool {
+	// result := false
+	// if tm.Tag != nil {
+	// 	_, result = tagMap[tm.Tag]
+	// } else {
+	// 	for _, m := range tm.Matches {
+
+	// 	}
+	// }
+	// if tm.Negate {
+	// 	return !result
+	// } else {
+	// 	return result
+	// }
 	return false
 }
