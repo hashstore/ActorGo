@@ -1,7 +1,7 @@
 syntax = "proto3";
-package gag.pb;
+package base;
 
-option go_package = ".;pb";
+option go_package = "github.com/hashstore/GoActorGo/base;base";
 
 // Content Address KEy - current implementation is SHA256 and `digest` length is
 // 32 bytes.

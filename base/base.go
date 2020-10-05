@@ -2,10 +2,9 @@ package base
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"text/scanner"
-
-	"github.com/hashstore/GoActorGo/pb"
 )
 
 func checkBlock(tokens []string, start int) []string {
@@ -26,8 +25,8 @@ func checkBlock(tokens []string, start int) []string {
 	}
 	return tokens[start+1:]
 }
-func parseTokens(tokens []string, negateIt bool) (*pb.TagMatch, error) {
-	var matches []*pb.TagMatch
+func parseTokens(tokens []string, negateIt bool) (*TagMatch, error) {
+	var matches []*TagMatch
 	combineOpDefined := false
 	combineWithOr := false
 	nextTagNegated := false
@@ -64,15 +63,24 @@ func parseTokens(tokens []string, negateIt bool) (*pb.TagMatch, error) {
 				if len(matches) > 0 && !combineOpDefined {
 					combineOpDefined = true
 				}
-				matches = append(matches, &pb.TagMatch{
-					Tag:    tokens[i],
+				text := tokens[i]
+				quote := text[0]
+				last := len(text) - 1
+				if quote == '"' && quote == text[last] {
+					u, err := strconv.Unquote(text)
+					if err == nil {
+						text = u
+					}
+				}
+				matches = append(matches, &TagMatch{
+					Tag:    text,
 					Negate: nextTagNegated,
 				})
 				nextTagNegated = false
 			}
 		}
 	}
-	return &pb.TagMatch{
+	return &TagMatch{
 		Matches:     matches,
 		CombineAsOr: combineWithOr,
 		Negate:      negateIt,
@@ -80,11 +88,11 @@ func parseTokens(tokens []string, negateIt bool) (*pb.TagMatch, error) {
 }
 
 // ParseTagMatch parse tag match query
-func ParseTagMatch(query string) (*pb.TagMatch, error) {
+func ParseTagMatch(query string) (*TagMatch, error) {
 	var s scanner.Scanner
 	s.Init(strings.NewReader(query))
 	s.Mode = scanner.SkipComments ^ scanner.GoTokens
-	s.Error = func(scanner *scanner.Scanner, msg string) {}
+	s.Error = func(s *scanner.Scanner, msg string) {}
 	var tokens []string
 	for tok := s.Scan(); tok != scanner.EOF; tok = s.Scan() {
 		tokens = append(tokens, s.TokenText())
@@ -105,10 +113,9 @@ func ParseTagMatch(query string) (*pb.TagMatch, error) {
 	if level != 0 {
 		return nil, fmt.Errorf("too few closing parentesises")
 	}
-
 	return parseTokens(tokens, false)
 }
 
-// func (*pb.TagMatch) testTags(tags ... string) bool {
-
-// }
+func (*TagMatch) testTags(tags ...string) bool {
+	return false
+}

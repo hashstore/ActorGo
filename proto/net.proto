@@ -1,7 +1,7 @@
 syntax = "proto3";
-package gag.pb;
+package net;
 
-option go_package = ".;pb";
+option go_package = "github.com/hashstore/GoActorGo/net;net";
 
 import "base.proto";
 
@@ -16,7 +16,7 @@ message HostCoordinate {
 
 // public information about host
 message Host {
-  Cake host_id = 1; // Cake of host public key
+  base.Cake host_id = 1; // Cake of host public key
   bytes pub_key = 2;
   repeated string env_tags = 3;
   repeated HostCoordinate coords = 4;
@@ -24,28 +24,28 @@ message Host {
 
 // public information about actor
 message ActorLocator {
-  Rake actor_id = 1;
-  Rake host_id = 2;
-  Cake config_id = 3;
+  base.Rake actor_id = 1;
+  base.Rake host_id = 2;
+  base.Cake config_id = 3;
 }
 
 // message set between actors
 message Message {
-  Rake actor_to = 1;
-  Rake actor_from = 2;
-  Nanotime sent = 3;
+  base.Rake actor_to = 1;
+  base.Rake actor_from = 2;
+  base.Nanotime sent = 3;
   bytes body = 4;
 }
 
 message ActorConfig {
-  TagMatch match = 1;
+  base.TagMatch match = 1;
   bytes config_body = 2;
 }
 
 message Worker { ActorLocator locator = 1; }
 
 message Domain {
-  Rake domain_id = 1;
+  base.Rake domain_id = 1;
   repeated Host hosts = 2;
   repeated ActorLocator actors = 3;
   repeated ActorConfig configs = 4;

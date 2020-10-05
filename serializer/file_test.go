@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/hashstore/GoActorGo/pb"
+	"github.com/hashstore/GoActorGo/base"
 	"github.com/hashstore/GoActorGo/sample"
 	"github.com/hashstore/GoActorGo/serializer"
 	"github.com/stretchr/testify/require"
@@ -16,17 +16,17 @@ func TestFileSerializer(t *testing.T) {
 	binaryFile := "../tmp/matches.bin"
 	jsonFile := "../tmp/matches.json"
 
-	laptop1 := sample.NewLaptop()
+	match1 := sample.NewTagMatch(3)
 
-	err := serializer.WriteProtobufToBinaryFile(laptop1, binaryFile)
+	err := serializer.WriteProtobufToBinaryFile(match1, binaryFile)
 	require.NoError(t, err)
 
-	err = serializer.WriteProtobufToJSONFile(laptop1, jsonFile)
+	err = serializer.WriteProtobufToJSONFile(match1, jsonFile)
 	require.NoError(t, err)
 
-	laptop2 := &pb.Laptop{}
-	err = serializer.ReadProtobufFromBinaryFile(binaryFile, laptop2)
+	match2 := &base.TagMatch{}
+	err = serializer.ReadProtobufFromBinaryFile(binaryFile, match2)
 	require.NoError(t, err)
 
-	require.True(t, proto.Equal(laptop1, laptop2))
+	require.True(t, proto.Equal(match1, match2))
 }

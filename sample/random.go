@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/hashstore/GoActorGo/pb"
+	"github.com/hashstore/GoActorGo/base"
 )
 
 func init() {
@@ -41,13 +41,13 @@ func randomID() string {
 }
 
 // NewLeafTagMatch creates leaf TagMatch
-func NewLeafTagMatch(numOfTags int) *pb.TagMatch {
-	matches := make([]*pb.TagMatch, numOfTags)
+func NewLeafTagMatch(numOfTags int) *base.TagMatch {
+	matches := make([]*base.TagMatch, numOfTags)
 	for i := 0; i < numOfTags; i++ {
-		matches[i] = &pb.TagMatch{
+		matches[i] = &base.TagMatch{
 			Tag: randomStringFromSet("a", "b", "c", "d", "e", "f")}
 	}
-	return &pb.TagMatch{
+	return &base.TagMatch{
 		Matches:     matches,
 		CombineAsOr: randomBool(),
 		Negate:      randomBool(),
@@ -55,15 +55,15 @@ func NewLeafTagMatch(numOfTags int) *pb.TagMatch {
 }
 
 // NewLeafTagMatch creates TagMatch tree
-func NewTagMatch(depth int) *pb.TagMatch {
+func NewTagMatch(depth int) *base.TagMatch {
 	if depth < 2 {
 		return NewLeafTagMatch(randomInt(1, 3))
 	}
-	matches := make([]*pb.TagMatch, randomInt(1, 3))
+	matches := make([]*base.TagMatch, randomInt(1, 3))
 	for i := 0; i < len(matches); i++ {
 		matches[i] = NewTagMatch(depth - 1)
 	}
-	return &pb.TagMatch{
+	return &base.TagMatch{
 		Matches:     matches,
 		CombineAsOr: randomBool(),
 		Negate:      randomBool()}
