@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/hashstore/GoActorGo/base"
+	"github.com/hashstore/hashlogic/base"
 )
 
 func init() {

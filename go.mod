@@ -1,4 +1,4 @@
-module github.com/hashstore/GoActorGo
+module github.com/hashstore/hashlogic
 
 go 1.15
 

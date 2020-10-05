@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/hashstore/GoActorGo/base"
+	"github.com/hashstore/hashlogic/base"
 )
 
 func main() {

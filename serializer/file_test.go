@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/hashstore/GoActorGo/base"
-	"github.com/hashstore/GoActorGo/sample"
-	"github.com/hashstore/GoActorGo/serializer"
+	"github.com/hashstore/hashlogic/base"
+	"github.com/hashstore/hashlogic/sample"
+	"github.com/hashstore/hashlogic/serializer"
 	"github.com/stretchr/testify/require"
 )
 

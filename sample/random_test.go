@@ -3,7 +3,7 @@ package sample_test
 import (
 	"testing"
 
-	"github.com/hashstore/GoActorGo/sample"
+	"github.com/hashstore/hashlogic/sample"
 	"github.com/stretchr/testify/require"
 )
 

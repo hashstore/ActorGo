@@ -1,7 +1,7 @@
 syntax = "proto3";
 package base;
 
-option go_package = "github.com/hashstore/GoActorGo/base;base";
+option go_package = "github.com/hashstore/hashlogic/base;base";
 
 // Content Address KEy - current implementation is SHA256 and `digest` length is
 // 32 bytes.
