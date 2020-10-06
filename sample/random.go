@@ -44,17 +44,12 @@ func randomID() string {
 func NewLeafTagMatch(numOfTags int) *base.TagMatch {
 	matches := make([]*base.TagMatch, numOfTags)
 	for i := 0; i < numOfTags; i++ {
-		matches[i] = &base.TagMatch{
-			Tag: randomStringFromSet("a", "b", "c", "d", "e", "f")}
+		matches[i] = base.TagMatchWithTag(randomStringFromSet("a", "b", "c", "d", "e", "f"), randomBool())
 	}
-	return &base.TagMatch{
-		Matches:     matches,
-		CombineAsOr: randomBool(),
-		Negate:      randomBool(),
-	}
+	return base.TagMatchWithMatches(matches, randomBool(), randomBool())
 }
 
-// NewLeafTagMatch creates TagMatch tree
+// NewTagMatch creates TagMatch tree
 func NewTagMatch(depth int) *base.TagMatch {
 	if depth < 2 {
 		return NewLeafTagMatch(randomInt(1, 3))
@@ -63,8 +58,5 @@ func NewTagMatch(depth int) *base.TagMatch {
 	for i := 0; i < len(matches); i++ {
 		matches[i] = NewTagMatch(depth - 1)
 	}
-	return &base.TagMatch{
-		Matches:     matches,
-		CombineAsOr: randomBool(),
-		Negate:      randomBool()}
+	return base.TagMatchWithMatches(matches, randomBool(), randomBool())
 }

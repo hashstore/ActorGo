@@ -3,9 +3,26 @@ package base
 import (
 	"fmt"
 	"strconv"
-	"strings"
-	"text/scanner"
+
+	"github.com/hashstore/hashlogic/util"
 )
+
+//TagMatchWithTag creates leaf TagMatch from string
+func TagMatchWithTag(text string, negate bool) *TagMatch {
+	return &TagMatch{
+		TagOrMatches: &TagMatch_Tag{Tag: text},
+		Negate:       negate,
+	}
+}
+
+//TagMatchWithMatches creates OR/AND combination of TagMatch'es
+func TagMatchWithMatches(matches []*TagMatch, combineWithOr bool, negateIt bool) *TagMatch {
+	return &TagMatch{
+		TagOrMatches: &TagMatch_Matches{&TagMatch_TagMatches{Matches: matches}},
+		CombineAsOr:  combineWithOr,
+		Negate:       negateIt,
+	}
+}
 
 func checkBlock(tokens []string, start int) []string {
 	if tokens[start] != "(" {
@@ -72,31 +89,17 @@ func parseTokens(tokens []string, negateIt bool) (*TagMatch, error) {
 						text = u
 					}
 				}
-				matches = append(matches, &TagMatch{
-					Tag:    text,
-					Negate: nextTagNegated,
-				})
+				matches = append(matches, TagMatchWithTag(text, nextTagNegated))
 				nextTagNegated = false
 			}
 		}
 	}
-	return &TagMatch{
-		Matches:     matches,
-		CombineAsOr: combineWithOr,
-		Negate:      negateIt,
-	}, nil
+	return TagMatchWithMatches(matches, combineWithOr, negateIt), nil
 }
 
 // ParseTagMatch parse tag match query
 func ParseTagMatch(query string) (*TagMatch, error) {
-	var s scanner.Scanner
-	s.Init(strings.NewReader(query))
-	s.Mode = scanner.SkipComments ^ scanner.GoTokens
-	s.Error = func(s *scanner.Scanner, msg string) {}
-	var tokens []string
-	for tok := s.Scan(); tok != scanner.EOF; tok = s.Scan() {
-		tokens = append(tokens, s.TokenText())
-	}
+	tokens := util.Tokenize(query)
 	// check balance of parentesises
 	level := 0
 	for i := 0; i < len(tokens); i++ {
@@ -116,20 +119,34 @@ func ParseTagMatch(query string) (*TagMatch, error) {
 	return parseTokens(tokens, false)
 }
 
-//MatchTags validates if `TagMatch` rule matches tags
-func (tm *TagMatch) MatchTagMap(tagMap *map[string]interface{}) bool {
-	// result := false
-	// if tm.Tag != nil {
-	// 	_, result = tagMap[tm.Tag]
-	// } else {
-	// 	for _, m := range tm.Matches {
+//MatchTagSet validates if `TagMatch` rule matches tags
+func (tm *TagMatch) MatchTagSet(tagSet *util.StringSet) bool {
+	result := false
+	switch v := tm.TagOrMatches.(type) {
+	case *TagMatch_Tag:
+		result = tagSet.Contains(v.Tag)
+	case *TagMatch_Matches:
+		if tm.CombineAsOr {
+			result = false
+			for _, m := range v.Matches.Matches {
+				if m.MatchTagSet(tagSet) {
+					result = true
+					break
+				}
+			}
+		} else {
+			result = true
+			for _, m := range v.Matches.Matches {
+				if !m.MatchTagSet(tagSet) {
+					result = false
+					break
+				}
+			}
+		}
+	}
+	if tm.Negate {
+		result = !result
+	}
+	return result
 
-	// 	}
-	// }
-	// if tm.Negate {
-	// 	return !result
-	// } else {
-	// 	return result
-	// }
-	return false
 }
