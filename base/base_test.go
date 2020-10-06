@@ -1,6 +1,7 @@
 package base_test
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/hashstore/hashlogic/base"
@@ -20,35 +21,87 @@ func TestParseTagMatch(t *testing.T) {
 }
 
 func TestTagMatch_MatchTagSet(t *testing.T) {
-
-	abc := util.NewStringSet("a", "b", "c")
-	// abd := util.NewStringSet("a", "b", "d")
-	// acd := util.NewStringSet("a", "d", "c")
-
-	type args struct {
-		tmText string
-		set    *util.StringSet
+	sets := []*util.StringSet{
+		util.NewStringSet("a", "b", "c"),   //abc
+		util.NewStringSet("a", "b", "d"),   //abd
+		util.NewStringSet("a", "c", "d&d"), //acdd
 	}
 
 	tests := []struct {
-		name string
-		args args
-		want bool
+		name        string
+		wantMatches []bool
+		wantError   error
 	}{
 		{
-			"and1",
-			args{"a b c", abc},
-			true,
+			"a b c",
+			//     abc   abd    acdd
+			[]bool{true, false, false},
+			nil,
 		},
-	}
+		{
+			"a &b c",
+			//     abc   abd    acdd
+			[]bool{true, false, false},
+			nil,
+		},
+		{
+			"a (b | c)",
+			//     abc   abd    acdd
+			[]bool{true, true, true},
+			nil,
+		},
+		{
+			"a (d | (!\"d&d\" & !b))",
+			//     abc   abd    acdd
+			[]bool{false, true, false},
+			nil,
+		},
+		{
+			"a b | c",
+			nil,
+			errors.New("Cannot mix AND:& and OR:| operations in same expression"),
+		},
+		{
+			"a | b c",
+			[]bool{true, true, true},
+			nil,
+		},
+		{
+			"a | b & c",
+			nil,
+			errors.New("Cannot mix AND:& and OR:| operations in same expression"),
+		},
+		{
+			"x (a | b & c)",
+			nil,
+			errors.New("Cannot mix AND:& and OR:| operations in same expression"),
+		},
+		{
+			"a | (b & c",
+			nil,
+			errors.New("too few closing parentesises"),
+		},
+		{
+			"a | (b & c))",
+			nil,
+			errors.New("too many closing parentesises at token:7"),
+		},
+		{
+			"a | (b & c))((a b)",
+			nil,
+			errors.New("too many closing parentesises at token:7"),
+		}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tm, err := base.ParseTagMatch(tt.args.tmText)
+			tm, err := base.ParseTagMatch(tt.name)
 			if err != nil {
-				t.Errorf("Error: %v", err)
+				require.Equal(t, tt.wantError.Error(), err.Error())
 			} else {
-				if got := tm.MatchTagSet(tt.args.set); got != tt.want {
-					t.Errorf("TagMatch.MatchTagSet() = %v, want %v", got, tt.want)
+				require.Equal(t, tt.wantError, nil)
+				for i, want := range tt.wantMatches {
+					if got := tm.MatchTagSet(sets[i]); got != want {
+						t.Errorf("%d:TagMatch.MatchTagSet() = %v, want %v", i, got, want)
+					}
 				}
 			}
 		})

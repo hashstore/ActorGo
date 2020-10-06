@@ -1,6 +1,7 @@
 package base
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -25,22 +26,21 @@ func TagMatchWithMatches(matches []*TagMatch, combineWithOr bool, negateIt bool)
 }
 
 func checkBlock(tokens []string, start int) []string {
-	if tokens[start] != "(" {
-		return nil
-	}
-	level := 1
-	for i := start + 1; i < len(tokens); i++ {
-		switch tokens[i] {
-		case "(":
-			level++
-		case ")":
-			level--
+	if tokens[start] == "(" {
+		level := 1
+		for i := start + 1; i < len(tokens); i++ {
+			switch tokens[i] {
+			case "(":
+				level++
+			case ")":
+				level--
+			}
+			if level == 0 {
+				return tokens[start+1 : i]
+			}
 		}
-		if level == 0 {
-			return tokens[start+1 : i]
-		}
 	}
-	return tokens[start+1:]
+	return nil
 }
 func parseTokens(tokens []string, negateIt bool) (*TagMatch, error) {
 	var matches []*TagMatch
@@ -65,14 +65,14 @@ func parseTokens(tokens []string, negateIt bool) (*TagMatch, error) {
 					combineOpDefined = true
 					combineWithOr = false
 				} else if combineWithOr {
-					return nil, fmt.Errorf("Cannot mix AND:& and OR:| operations in same expression")
+					return nil, errors.New("Cannot mix AND:& and OR:| operations in same expression")
 				}
 			case "|":
 				if !combineOpDefined {
 					combineOpDefined = true
 					combineWithOr = true
 				} else if !combineWithOr {
-					return nil, fmt.Errorf("Cannot mix AND:& and OR:| operations in same expression")
+					return nil, errors.New("Cannot mix AND:& and OR:| operations in same expression")
 				}
 			case "!":
 				nextTagNegated = true

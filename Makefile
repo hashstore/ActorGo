@@ -6,3 +6,6 @@ clean:
 	rm -f */*.pb.go
 run:
 	go run main.go
+
+test:
+	go test -v ./...

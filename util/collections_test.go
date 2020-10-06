@@ -111,3 +111,26 @@ func TestStringSet(t *testing.T) {
 		})
 	}
 }
+
+func TestTokenize(t *testing.T) {
+	tests := []struct {
+		name string
+		text string
+		want []string
+	}{
+		{
+			"from_main",
+			`// xya
+	"text & \tabc" & ( !a | 3 | "c | b" | d ) x`,
+			[]string{"// xya", "\"text & \\tabc\"", "&", "(", "!", "a", "|",
+				"3", "|", "\"c | b\"", "|", "d", ")", "x"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := util.Tokenize(tt.text); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Tokenize() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
