@@ -213,8 +213,9 @@ type TagMatch struct {
 	//	*TagMatch_Tag
 	//	*TagMatch_Matches
 	TagOrMatches isTagMatch_TagOrMatches `protobuf_oneof:"tagOrMatches"`
-	CombineAsOr  bool                    `protobuf:"varint,3,opt,name=combine_as_or,json=combineAsOr,proto3" json:"combine_as_or,omitempty"` // `and` behavior is default, `or` if `true`
-	Negate       bool                    `protobuf:"varint,4,opt,name=negate,proto3" json:"negate,omitempty"`                                // negate combined match
+	CombineAsOr  bool                    `protobuf:"varint,3,opt,name=combine_as_or,json=combineAsOr,proto3" json:"combine_as_or,omitempty"` // `and` behavior is default, `or` behavior when
+	// `combine_as_or == true`
+	Negate bool `protobuf:"varint,4,opt,name=negate,proto3" json:"negate,omitempty"` // negate combined match
 }
 
 func (x *TagMatch) Reset() {
